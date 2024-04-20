@@ -39,8 +39,9 @@ namespace MauiBarcodeApp
         private void ResetBookDetail()
         {
             // Default contents
-            LabelTitle.Text = "Title: ";
-            LabelSubtitle.Text = "Subtitle: ";
+            LabelTitle.Text = "Product Name: ";
+            LabelSubtitle.Text = "Ingredients: ";
+            Brand.Text = "Brand: ";
             LabelMessage.Text = string.Empty;
             LabelMessage.TextColor = Colors.Black;
             ImageCover.Source =
@@ -56,20 +57,42 @@ namespace MauiBarcodeApp
                 var rootElement = jsonDocument.RootElement;
                 Console.WriteLine(rootElement.ToString());
                 // try to get title
-                if (rootElement.TryGetProperty("title", out var title))
+                if (rootElement.TryGetProperty("product", out var product))
                 {
-                    LabelTitle.Text += title.ToString();
+                    if (product.TryGetProperty("image_url", out var image_url))
+                    {
+                        ImageCover.Source = ImageSource.FromUri(new Uri(image_url.ToString()));
+                    }
+
+
+                    // Try to get the subtitle
+                    if (product.TryGetProperty("ingredients_text", out var subtitle))
+                    {
+                        LabelSubtitle.Text += subtitle.ToString();
+                    }
+
+                    if (product.TryGetProperty("brands", out var brand))
+                    {
+                        Brand.Text += brand.ToString();
+                    }
+
+
+                    string[] keys = new string[] { "product_name", "abbreviated_product_name" };
+                    foreach (var key in keys)
+                    {
+                        if (product.TryGetProperty(key, out var product_name) && !string.IsNullOrEmpty(product_name.ToString()))
+                        {
+                            LabelTitle.Text += product_name.ToString();
+                            break;
+                        }
+                    }
+
                 }
-                // Try to get the subtitle
-                if (rootElement.TryGetProperty("subtitle",
-               out var subtitle))
-                {
-                    LabelSubtitle.Text += subtitle.ToString();
-                }
+
             }
             // update book cover image url
-            ImageCover.Source = ImageSource.FromUri(new Uri(
-           $"https://covers.openlibrary.org/b/isbn/{EntryISBN.Text.Trim()}-M.jpg"));
+           // ImageCover.Source = ImageSource.FromUri(new Uri(
+           //$"https://covers.openlibrary.org/b/isbn/{EntryISBN.Text.Trim()}-M.jpg"));
         }
 
         private async void FindBtn_Clicked(object sender, EventArgs e)
@@ -83,15 +106,17 @@ namespace MauiBarcodeApp
             ResetBookDetail();
             try
             {
-                await Show_Toast("Querying book information");
+                await Show_Toast("Querying Product information");
                 // API endpoint format: https://openlibrary.org/isbn/<ISBN of the book>.json
-                string ApiUrl = $"https://openlibrary.org/isbn/{EntryISBN.Text.Trim()}.json";
+                //string ApiUrl = $"https://openlibrary.org/isbn/{EntryISBN.Text.Trim()}.json";
+                string ApiUrl = $"https://world.openfoodfacts.org/api/v0/product/{EntryISBN.Text.Trim()}.json";
                 var resp = await client.GetStringAsync(ApiUrl);
                 LabelHttpResponse.Text = resp;
-                if (resp.Length < 13)
+                JsonDocument.Parse(resp).RootElement.TryGetProperty("status", out var status);
+                if (resp.Length < 13 || status.GetInt32() == 0)
                 {
                     // Book not found
-                    LabelMessage.Text = "Book not found";
+                    LabelMessage.Text = "Product not found";
                     return;
                 }
                 ParseBookJSON(resp);
