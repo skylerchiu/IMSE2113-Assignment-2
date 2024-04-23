@@ -20,16 +20,18 @@
                 <Entry x:Name="EntryISBN" Placeholder="Enter an Product Barcode" FontSize="18" Text="" />
             </HorizontalStackLayout>
 
+            <ActivityIndicator x:Name="spinner" IsRunning="False" IsVisible="False" Color="Red" />
+
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
-                <Button x:Name="FindBtn" HorizontalOptions="Center" Text="Find Book" Clicked="FindBtn_Clicked" />
-                <Button x:Name="ScanIsbnBtn" HorizontalOptions="Center" Text="Scan ISBN" Clicked="ScanIsbnBtn_Clicked" />
+                <Button x:Name="FindBtn" HorizontalOptions="Center" Text="Find Product" Clicked="FindBtn_Clicked" />
+                <Button x:Name="ScanIsbnBtn" HorizontalOptions="Center" Text="Scan Barcode" Clicked="ScanIsbnBtn_Clicked" />
             </HorizontalStackLayout>
 
 
 
             <BoxView HeightRequest="1" BackgroundColor="LightGray" />
             <Label x:Name="LabelTitle" FontAttributes="Bold" TextColor="White" FontSize="20" Text="Product Name: " />
-            <Label x:Name="Brand" TextColor="White" Text="Brand: " />
+            <Label x:Name="Brand" TextColor="White" FontSize="20" Text="Brand: " />
             <Label x:Name="LabelSubtitle" TextColor="White" Text="Ingredients: " />
             <Label x:Name="ImageLabel" TextColor="White" Text="Product Image: " FontSize="20" />
             <Image x:Name="ImageCover" HorizontalOptions="Center" Source="image_coming_soon.png" />

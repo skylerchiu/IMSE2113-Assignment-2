@@ -1,3 +1,5 @@
+using Android.Widget;
+
 namespace MauiBarcodeApp;
 
 public partial class BarcodeScanning : ContentPage
@@ -15,9 +17,16 @@ public partial class BarcodeScanning : ContentPage
         }
     }
 
-    private void cameraView_BarcodeDetected(object sender, Camera.MAUI.ZXingHelper.BarcodeEventArgs args)
+    private async void cameraView_BarcodeDetected(object sender, Camera.MAUI.ZXingHelper.BarcodeEventArgs args)
     {
-        Shell.Current.GoToAsync($"..?format={args.Result[0].BarcodeFormat}&barcode={args.Result[0].Text}");
+        string scannedBarcode = args.Result[0].Text; // Get the scanned barcode from the event args
+
+        Device.BeginInvokeOnMainThread(async () =>
+        {
+            await Navigation.PushAsync(new MainPage(scannedBarcode)); // Navigate to MainPage with the scanned barcode
+        });
+
+        //Shell.Current.GoToAsync($"..?format={args.Result[0].BarcodeFormat}&barcode={args.Result[0].Text}");
 
     }
 

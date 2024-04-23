@@ -3,20 +3,13 @@ using System.Text.Json;
 using System.Web;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
+using Org.Apache.Http.Client;
 
 namespace MauiBarcodeApp
 {
-    public partial class MainPage : ContentPage, IQueryAttributable
+    public partial class MainPage : ContentPage
     {
         HttpClient client = new HttpClient();
-
-
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
-        {
-            EntryISBN.Text = HttpUtility.UrlDecode(query["barcode"].ToString());
-            Console.WriteLine(HttpUtility.UrlDecode(query["format"].ToString()));
-            query.Clear();
-        }
 
         private void Network_test()
         {
@@ -29,11 +22,13 @@ namespace MauiBarcodeApp
                 Debug.WriteLine("Network test ok. " +
                resp.Content.ReadAsStringAsync().Result);
                 LabelHttpResponse.Text = "Network ready";
+                LabelHttpResponse.TextColor = Colors.Green;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Network test fail. " + ex.Message);
                 LabelHttpResponse.Text = "Network may not ready";
+                LabelHttpResponse.TextColor = Colors.Red;
             }
         }
 
@@ -107,11 +102,12 @@ namespace MauiBarcodeApp
 
         private async void FindBtn_Clicked(object sender, EventArgs e)
         {
-            var test = EntryISBN.Text;
+            spinner.IsRunning = spinner.IsVisible = true; // Show the spinner
             if (EntryISBN.Text.Trim().Length == 0)
             {
                 // No ISBN number is entered
-                await Show_Toast("Please enter an ISBN number");
+                await Show_Toast("Please enter an Barcode");
+                spinner.IsRunning = spinner.IsVisible = false;
                 return;
             }
             ResetBookDetail();
@@ -122,37 +118,46 @@ namespace MauiBarcodeApp
                 //string ApiUrl = $"https://openlibrary.org/isbn/{EntryISBN.Text.Trim()}.json";
                 string ApiUrl = $"https://world.openfoodfacts.org/api/v0/product/{EntryISBN.Text.Trim()}.json";
                 var resp = await client.GetStringAsync(ApiUrl);
-                LabelHttpResponse.Text = resp;
+                // LabelHttpResponse.Text = resp;
                 JsonDocument.Parse(resp).RootElement.TryGetProperty("status", out var status);
+                spinner.IsRunning = spinner.IsVisible = false;
                 if (resp.Length < 13 || status.GetInt32() == 0)
                 {
                     // Book not found
-                    LabelMessage.Text = "Product not found";
+                    LabelTitle.Text = "Product not found";
+                    LabelTitle.TextColor = Colors.Red;
+                    LabelSubtitle.Text = string.Empty;
+                    Brand.Text = string.Empty;
+                    LabelMessage.Text = string.Empty;
+                    ImageLabel.Text = string.Empty;
+
                     return;
                 }
                 ParseBookJSON(resp);
+                
             }
             catch (Exception ex)
             {
                 LabelHttpResponse.Text =
                "Querying book information error. " + ex.Message;
                 Debug.WriteLine(LabelHttpResponse.Text);
+                spinner.IsRunning = spinner.IsVisible = false;
             }
         }
 
         private async void ScanIsbnBtn_Clicked(object sender, EventArgs e)
         {
-            ResetBookDetail();
             await Shell.Current.GoToAsync("barcodescanning");
         }
 
+        public MainPage() : this(string.Empty) { }
 
-        public MainPage()
+        public MainPage(string barcode = "")
         {
             InitializeComponent();
 
             Routing.RegisterRoute("barcodescanning", typeof(BarcodeScanning));
-
+            EntryISBN.Text = barcode;
             Network_test();
         }
 

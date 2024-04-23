@@ -10,5 +10,9 @@
          CamerasLoaded="cameraView_CamerasLoaded"
          BarCodeDetectionEnabled="True"
          BarcodeDetected="cameraView_BarcodeDetected" />
+
     </VerticalStackLayout>
+
+
+    
 </ContentPage>
