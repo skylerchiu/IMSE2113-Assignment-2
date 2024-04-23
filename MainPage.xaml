@@ -20,7 +20,11 @@
                 <Entry x:Name="EntryISBN" Placeholder="Enter an Product Barcode" FontSize="18" Text="" />
             </HorizontalStackLayout>
 
-            <Button x:Name="FindBtn" HorizontalOptions="Center" Text="Find Product" Clicked="FindBtn_Clicked" />
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                <Button x:Name="FindBtn" HorizontalOptions="Center" Text="Find Book" Clicked="FindBtn_Clicked" />
+                <Button x:Name="ScanIsbnBtn" HorizontalOptions="Center" Text="Scan ISBN" Clicked="ScanIsbnBtn_Clicked" />
+            </HorizontalStackLayout>
+
 
 
             <BoxView HeightRequest="1" BackgroundColor="LightGray" />

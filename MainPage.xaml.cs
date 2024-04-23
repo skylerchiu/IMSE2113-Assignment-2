@@ -1,13 +1,23 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
+using System.Web;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 
 namespace MauiBarcodeApp
 {
-    public partial class MainPage : ContentPage
+    public partial class MainPage : ContentPage, IQueryAttributable
     {
         HttpClient client = new HttpClient();
+
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            EntryISBN.Text = HttpUtility.UrlDecode(query["barcode"].ToString());
+            Console.WriteLine(HttpUtility.UrlDecode(query["format"].ToString()));
+            query.Clear();
+        }
+
         private void Network_test()
         {
             Debug.WriteLine("Network test start");
@@ -97,6 +107,7 @@ namespace MauiBarcodeApp
 
         private async void FindBtn_Clicked(object sender, EventArgs e)
         {
+            var test = EntryISBN.Text;
             if (EntryISBN.Text.Trim().Length == 0)
             {
                 // No ISBN number is entered
@@ -129,11 +140,19 @@ namespace MauiBarcodeApp
             }
         }
 
+        private async void ScanIsbnBtn_Clicked(object sender, EventArgs e)
+        {
+            ResetBookDetail();
+            await Shell.Current.GoToAsync("barcodescanning");
+        }
 
 
         public MainPage()
         {
             InitializeComponent();
+
+            Routing.RegisterRoute("barcodescanning", typeof(BarcodeScanning));
+
             Network_test();
         }
 
