@@ -1,5 +1,3 @@
-using Android.Widget;
-
 namespace MauiBarcodeApp;
 
 public partial class BarcodeScanning : ContentPage
@@ -23,7 +21,7 @@ public partial class BarcodeScanning : ContentPage
 
         Device.BeginInvokeOnMainThread(async () =>
         {
-            await Navigation.PushAsync(new MainPage(scannedBarcode)); // Navigate to MainPage with the scanned barcode
+            await Navigation.PushAsync(new MainPage(scannedBarcode)); // This is a work around for an issue that I ran into
         });
 
         //Shell.Current.GoToAsync($"..?format={args.Result[0].BarcodeFormat}&barcode={args.Result[0].Text}");

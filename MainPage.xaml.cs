@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Web;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
-using Org.Apache.Http.Client;
 
 namespace MauiBarcodeApp
 {
@@ -47,8 +46,6 @@ namespace MauiBarcodeApp
             LabelTitle.Text = "Product Name: ";
             LabelSubtitle.Text = "Ingredients: ";
             Brand.Text = "Brand: ";
-            LabelMessage.Text = string.Empty;
-            LabelMessage.TextColor = Colors.Black;
             ImageCover.Source =
            ImageSource.FromFile("image_coming_soon.png");
         }
@@ -128,7 +125,6 @@ namespace MauiBarcodeApp
                     LabelTitle.TextColor = Colors.Red;
                     LabelSubtitle.Text = string.Empty;
                     Brand.Text = string.Empty;
-                    LabelMessage.Text = string.Empty;
                     ImageLabel.Text = string.Empty;
 
                     return;
